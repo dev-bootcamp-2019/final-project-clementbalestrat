@@ -1,15 +1,21 @@
-pragma solidity ^0.4.25;
-contract MarketPlace {
+pragma solidity ^0.5.0;
+
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./Mortal.sol";
+
+contract MarketPlace is Ownable, Pausable, Mortal {
+
+    using SafeMath for uint256;
     mapping (address => bool) public administrators;
     mapping (address => bool) public storeOwners;
 
     bytes32[] private storefronts;
-    mapping (address => bytes32[]) private storefrontsByOwner;
-    mapping (bytes32 => Storefront) private storefrontById;
+    mapping (address => bytes32[]) public storefrontsByOwner;
+    mapping (bytes32 => Storefront) public storefrontsById;
     mapping(bytes32 => bytes32[]) private inventoryByStorefrontId;
     mapping(bytes32 => Item) private itemById;
-
-    address public owner;
 
     struct Storefront {
         bytes32 id;
@@ -25,25 +31,24 @@ contract MarketPlace {
         uint quantity;
     }
 
-    event adminAdded(address admin);
-    event adminRemoved(address admin);
-    event storeOwnerAdded(address storeOwner);
-    event storeOwnerRemoved(address storeOwner);
-    event storeCreated(bytes32 id, string name, address owner);
-    event storeRemoved(bytes32 id);
-    event balanceWithdrawn(bytes32 id, uint balance);
-    event itemAdded(bytes32 id, string name, uint price, uint qty);
-    event itemRemoved(bytes32 id);
-    event itemPriceUpdated(bytes32 id, uint newPrice, uint oldPrice);
-    event itemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
-    event itemSold(bytes32 storeId, bytes32 itemId, uint qty);
+    event AdminAdded(address admin);
+    event AdminRemoved(address admin);
+    event StoreOwnerAdded(address storeOwner);
+    event StoreOwnerRemoved(address storeOwner);
+    event StoreCreated(bytes32 id, string name, address owner);
+    event StoreRemoved(bytes32 id);
+    event BalanceWithdrawn(bytes32 id, uint balance);
+    event ItemAdded(bytes32 id, string name, uint price, uint qty);
+    event ItemRemoved(bytes32 id);
+    event ItemPriceUpdated(bytes32 id, uint newPrice, uint oldPrice);
+    event ItemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
+    event ItemSold(bytes32 storeId, bytes32 itemId, uint qty);
 
     modifier onlyAdmin() {require(administrators[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStoreOwner() {require(storeOwners[msg.sender] == true, "Sender not authorized."); _;}
-    modifier onlyStorefrontOwner(bytes32 id) {require(storefrontById[id].owner == msg.sender, "Sender not authorized."); _;}
+    modifier onlyStorefrontOwner(bytes32 id) {require(storefrontsById[id].owner == msg.sender, "Sender not authorized."); _;}
 
     constructor() public {
-        owner = msg.sender;
         administrators[msg.sender] = true;
     }
 
@@ -52,7 +57,7 @@ contract MarketPlace {
     onlyAdmin()
     returns(bool) {
         administrators[addr] = true;
-        emit adminAdded(addr);
+        emit AdminAdded(addr);
         return true;
     }
 
@@ -61,7 +66,7 @@ contract MarketPlace {
     onlyAdmin()
     returns(bool) {
         administrators[addr] = false;
-        emit adminRemoved(addr);
+        emit AdminRemoved(addr);
         return true;
     }
 
@@ -70,7 +75,7 @@ contract MarketPlace {
     onlyAdmin()
     returns(bool) {
         storeOwners[addr] = true;
-        emit storeOwnerAdded(addr);
+        emit StoreOwnerAdded(addr);
         return true;
     }
 
@@ -79,11 +84,11 @@ contract MarketPlace {
     onlyAdmin()
     returns(bool) {
         storeOwners[addr] = false;
-        emit storeOwnerRemoved(addr);
+        emit StoreOwnerRemoved(addr);
         return true;
     }
 
-    function createStore(string name)
+    function createStore(string memory name)
     public
     onlyStoreOwner()
     returns(bytes32) {
@@ -91,8 +96,8 @@ contract MarketPlace {
         Storefront memory s = Storefront(id, name, msg.sender, 0);
         storefronts.push(id);
         storefrontsByOwner[msg.sender].push(id);
-        storefrontById[id] = s;
-        emit storeCreated(id, name, msg.sender);
+        storefrontsById[id] = s;
+        emit StoreCreated(id, name, msg.sender);
         return id;
     }
 
@@ -112,7 +117,7 @@ contract MarketPlace {
 
         // Remove from storefrontsByOwner mapping
         uint storefrontCount = storefrontsByOwner[msg.sender].length;
-        for(i = 0; i < storefrontCount; i++) {
+        for(uint i = 0; i < storefrontCount; i++) {
             if (storefrontsByOwner[msg.sender][i] == storeId) {
                 storefrontsByOwner[msg.sender][i] = storefrontsByOwner[msg.sender][storefrontCount-1];
                 delete storefrontsByOwner[msg.sender][storefrontCount-1];
@@ -122,7 +127,7 @@ contract MarketPlace {
 
         // Remove from storefronts array
         storefrontCount = storefronts.length;
-        for(i = 0; i < storefrontCount; i++) {
+        for(uint i = 0; i < storefrontCount; i++) {
             if (storefronts[i] == storeId) {
                 delete storefronts[i];
                 break;
@@ -130,20 +135,20 @@ contract MarketPlace {
         }
 
         // Withdraw Balance
-        uint storefrontBalance = storefrontById[storeId].balance;
+        uint storefrontBalance = storefrontsById[storeId].balance;
         if (storefrontBalance > 0) {
             msg.sender.transfer(storefrontBalance);
-            storefrontById[storeId].balance = 0;
-            emit balanceWithdrawn(storeId, storefrontBalance);
+            storefrontsById[storeId].balance = 0;
+            emit BalanceWithdrawn(storeId, storefrontBalance);
         }
 
-        // Remove from storefrontById
-        delete storefrontById[storeId];
-        emit storeRemoved(storeId);
+        // Remove from storefrontsById
+        delete storefrontsById[storeId];
+        emit StoreRemoved(storeId);
         return storeId;
     }
 
-    function addItemToInventory(bytes32 storeId, string itemName, uint itemPrice, uint itemQuantity)
+    function addItemToInventory(bytes32 storeId, string memory itemName, uint itemPrice, uint itemQuantity)
     public
     onlyStorefrontOwner(storeId)
     returns(bytes32) {
@@ -151,7 +156,7 @@ contract MarketPlace {
         Item memory i = Item(itemId, itemName, itemPrice, itemQuantity);
         itemById[itemId] = i;
         inventoryByStorefrontId[storeId].push(itemId);
-        emit itemAdded(itemId, itemName, itemPrice, itemQuantity);
+        emit ItemAdded(itemId, itemName, itemPrice, itemQuantity);
         return itemId;
     }
 
@@ -170,7 +175,7 @@ contract MarketPlace {
         }
         //Remove item from items mapping
         delete itemById[itemId];
-        emit itemRemoved(itemId);
+        emit ItemRemoved(itemId);
         return itemId;
     }
 
@@ -180,7 +185,7 @@ contract MarketPlace {
     returns(bytes32) {
         uint oldPrice = itemById[itemId].price;
         itemById[itemId].price = newPrice;
-        emit itemPriceUpdated(itemId, newPrice, oldPrice);
+        emit ItemPriceUpdated(itemId, newPrice, oldPrice);
         return itemId;
     }
 
@@ -190,8 +195,27 @@ contract MarketPlace {
     returns(bytes32) {
         uint oldQty = itemById[itemId].quantity;
         itemById[itemId].quantity = newQty;
-        emit itemQuantityUpdated(itemId, newQty, oldQty);
+        emit ItemQuantityUpdated(itemId, newQty, oldQty);
         return itemId;
+    }
+
+    function widthdrawStorefrontBalance(bytes32 storeId)
+    public
+    onlyStorefrontOwner(storeId)
+    returns(bool) {
+        uint storefrontBalance = storefrontsById[storeId].balance;
+        if (storefrontBalance > 0) {
+            msg.sender.transfer(storefrontBalance);
+            storefrontsById[storeId].balance = 0;
+            emit BalanceWithdrawn(storeId, storefrontBalance);
+        }
+    }
+
+    function getStorefrontCountByOwner(address owner)
+	public
+	view
+    returns (uint) {
+        return storefrontsByOwner[owner].length;
     }
 
     function purchaseItem(bytes32 storeId, bytes32 itemId, uint quantity)
@@ -199,7 +223,7 @@ contract MarketPlace {
     payable
     returns(bool) {
         Item memory item = itemById[itemId];
-        uint totalPrice = item.price * quantity;
+        uint totalPrice = item.price.mul(quantity);
         require(msg.value >= totalPrice, "msg.value must be greater or equal than total price");
         require(item.quantity >= quantity, "Item quantity is not enough");
 
@@ -208,9 +232,10 @@ contract MarketPlace {
         }
 
         item.quantity -= quantity;
-        storefrontById[storeId].balance += totalPrice;
-        emit itemSold(storeId, itemId, quantity);
+        storefrontsById[storeId].balance += totalPrice;
+        emit ItemSold(storeId, itemId, quantity);
         return true;
     }
+
 
 }

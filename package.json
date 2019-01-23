@@ -1,0 +1,29 @@
+{
+  "name": "consensys-marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^2.1.2"
+  },
+  "devDependencies": {
+    "bn.js": "^4.11.8",
+    "truffle": "^5.0.2"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-bootcamp-2019/final-project-clementbalestrat.git"
+  },
+  "author": "Clement Balestrat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dev-bootcamp-2019/final-project-clementbalestrat/issues"
+  },
+  "homepage": "https://github.com/dev-bootcamp-2019/final-project-clementbalestrat#readme"
+}
