@@ -56,21 +56,29 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         marketPlaceState = _marketPlaceState;
     }
 
-    function addAdmin(address addr)
+    function addAdmin(address _addr)
     public
     onlyAdmin()
     returns(bool) {
-        marketPlaceState.addAdministrator(msg.sender);
-        emit AdminAdded(addr);
+        if (marketPlaceState.addAdministrator(_addr) == _addr) {
+            emit AdminAdded(_addr);
+        }
         return true;
     }
 
-    function removeAdmin(address addr)
+    function isAdmin(address _addr)
+    public
+    view
+    returns(bool) {
+        return marketPlaceState.isAdministrator(_addr);
+    }
+
+    function removeAdmin(address _addr)
     public
     onlyAdmin()
     returns(bool) {
-        marketPlaceState.removeAdministrator(msg.sender);
-        emit AdminRemoved(addr);
+        marketPlaceState.removeAdministrator(_addr);
+        emit AdminRemoved(_addr);
         return true;
     }
 

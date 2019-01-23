@@ -13,8 +13,17 @@ contract MarketPlaceState is State {
     
     function addAdministrator(address _addr)
     external
-    onlyAssociatedContract {
+    onlyAssociatedContract
+    returns(address) {
         administrators[_addr] = true;
+        return _addr;
+    }
+
+    function isAdministrator(address _addr)
+    external
+    view
+    returns(bool) {
+        return administrators[_addr];
     }
 
     function removeAdministrator(address _admin)
@@ -23,5 +32,6 @@ contract MarketPlaceState is State {
         administrators[_admin] = false;
     }
 
+    event test(address addr);
 
 }
