@@ -5,19 +5,20 @@ import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Mortal.sol";
 import "./Proxyable.sol";
+import "./MarketPlaceState.sol";
 
 contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     using SafeMath for uint256;
-    mapping (address => bool) public administrators;
-    mapping (address => bool) public storeOwners;
 
+    MarketPlaceState public marketPlaceState;
+
+    mapping (address => bool) public storeOwners;
     bytes32[] private storefronts;
     mapping (address => bytes32[]) public storefrontsByOwner;
     mapping (bytes32 => Storefront) public storefrontsById;
-    mapping(bytes32 => bytes32[]) private inventoryByStorefrontId;
-    mapping(bytes32 => Item) private itemById;
-
+    mapping(bytes32 => bytes32[]) public inventoryByStorefrontId;
+    mapping(bytes32 => Item) public itemById;
     struct Storefront {
         bytes32 id;
         string name;
@@ -45,21 +46,21 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     event ItemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
     event ItemSold(bytes32 storeId, bytes32 itemId, uint qty);
 
-    modifier onlyAdmin() {require(administrators[msg.sender] == true, "Sender not authorized."); _;}
+    modifier onlyAdmin() {require(marketPlaceState.administrators(msg.sender) == true, "Sender not authorized."); _;}
     modifier onlyStoreOwner() {require(storeOwners[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStorefrontOwner(bytes32 id) {require(storefrontsById[id].owner == msg.sender, "Sender not authorized."); _;}
 
-    constructor(address payable _proxy)
+    constructor(address payable _proxy, MarketPlaceState _marketPlaceState)
     Proxyable(_proxy)
     public {
-        administrators[msg.sender] = true;
+        marketPlaceState = _marketPlaceState;
     }
 
     function addAdmin(address addr)
     public
     onlyAdmin()
     returns(bool) {
-        administrators[addr] = true;
+        marketPlaceState.addAdministrator(msg.sender);
         emit AdminAdded(addr);
         return true;
     }
@@ -68,7 +69,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     public
     onlyAdmin()
     returns(bool) {
-        administrators[addr] = false;
+        marketPlaceState.removeAdministrator(msg.sender);
         emit AdminRemoved(addr);
         return true;
     }
