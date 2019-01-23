@@ -4,8 +4,9 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Mortal.sol";
+import "./Proxyable.sol";
 
-contract MarketPlace is Ownable, Pausable, Mortal {
+contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     using SafeMath for uint256;
     mapping (address => bool) public administrators;
@@ -48,7 +49,9 @@ contract MarketPlace is Ownable, Pausable, Mortal {
     modifier onlyStoreOwner() {require(storeOwners[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStorefrontOwner(bytes32 id) {require(storefrontsById[id].owner == msg.sender, "Sender not authorized."); _;}
 
-    constructor() public {
+    constructor(address payable _proxy)
+    Proxyable(_proxy)
+    public {
         administrators[msg.sender] = true;
     }
 

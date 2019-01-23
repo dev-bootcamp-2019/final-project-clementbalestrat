@@ -2,7 +2,7 @@ const { assertEventEqual } = require('../utils/testUtils');
 const MarketPlace = artifacts.require('MarketPlace');
 
 contract('MarketPlace', async accounts => {
-  const [, owner, account1, account2, storeOwner] = accounts;
+  const [ owner, account1, account2, storeOwner] = accounts;
   let marketPlace;
 
   beforeEach(async () => {
@@ -66,13 +66,13 @@ contract('MarketPlace', async accounts => {
         from: storeOwner,
       });
       const storeId = await marketPlace.storefrontsByOwner(storeOwner, 0);
-      await marketPlace.addItemToInventory(
-        storeId,
-        'a brand new item',
-        20,
-        10,
-        { from: storeOwner }
-      );
+      // await marketPlace.addItemToInventory(
+      //   storeId,
+      //   'a brand new item',
+      //   20,
+      //   10,
+      //   { from: storeOwner }
+      // );
     });
     it('allows a store owner to remove an item to a store inventory', async () => {});
     it('allows a store owner to update the price of an item', async () => {});
