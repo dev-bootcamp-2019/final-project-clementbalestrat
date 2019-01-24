@@ -5,20 +5,19 @@ import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Mortal.sol";
 import "./Proxyable.sol";
-import "./MarketPlaceState.sol";
 
 contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     using SafeMath for uint256;
-
-    MarketPlaceState public marketPlaceState;
-
+    mapping (address => bool) public administrators;
     mapping (address => bool) public storeOwners;
+
     bytes32[] private storefronts;
     mapping (address => bytes32[]) public storefrontsByOwner;
     mapping (bytes32 => Storefront) public storefrontsById;
-    mapping(bytes32 => bytes32[]) public inventoryByStorefrontId;
-    mapping(bytes32 => Item) public itemById;
+    mapping(bytes32 => bytes32[]) private inventoryByStorefrontId;
+    mapping(bytes32 => Item) private itemById;
+
     struct Storefront {
         bytes32 id;
         string name;
@@ -46,39 +45,31 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     event ItemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
     event ItemSold(bytes32 storeId, bytes32 itemId, uint qty);
 
-    modifier onlyAdmin() {require(marketPlaceState.administrators(msg.sender) == true, "Sender not authorized."); _;}
+    modifier onlyAdmin() {require(administrators[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStoreOwner() {require(storeOwners[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStorefrontOwner(bytes32 id) {require(storefrontsById[id].owner == msg.sender, "Sender not authorized."); _;}
 
-    constructor(address payable _proxy, MarketPlaceState _marketPlaceState)
+    constructor(address payable _proxy)
     Proxyable(_proxy)
     public {
-        marketPlaceState = _marketPlaceState;
+        administrators[msg.sender] = true;
     }
 
-    function addAdmin(address _addr)
+    function addAdmin(address addr)
     public
     onlyAdmin()
     returns(bool) {
-        if (marketPlaceState.addAdministrator(_addr) == _addr) {
-            emit AdminAdded(_addr);
-        }
+        administrators[addr] = true;
+        emit AdminAdded(addr);
         return true;
     }
 
-    function isAdmin(address _addr)
-    public
-    view
-    returns(bool) {
-        return marketPlaceState.isAdministrator(_addr);
-    }
-
-    function removeAdmin(address _addr)
+    function removeAdmin(address addr)
     public
     onlyAdmin()
     returns(bool) {
-        marketPlaceState.removeAdministrator(_addr);
-        emit AdminRemoved(_addr);
+        administrators[addr] = false;
+        emit AdminRemoved(addr);
         return true;
     }
 

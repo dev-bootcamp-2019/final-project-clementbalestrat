@@ -12,15 +12,15 @@ contract('MarketPlace', async accounts => {
   describe('when admin', () => {
     it('allows an admin to add another admin', async () => {
       await marketPlace.addAdmin(account1, { from: owner });
-      const isAdmin = await marketPlace.isAdmin(account1);
+      const isAdmin = await marketPlace.administrators(account1);
       assert.equal(isAdmin, true);
     });
     it('allows an admin to remove another admin', async () => {
       await marketPlace.addAdmin(account1, { from: owner });
-      let isAdmin = await marketPlace.isAdmin(account1);
+      let isAdmin = await marketPlace.administrators(account1);
       assert.equal(isAdmin, true);
       await marketPlace.removeAdmin(account1, { from: owner });
-      isAdmin = await marketPlace.isAdmin(account1);
+      isAdmin = await marketPlace.administrators(account1);
       assert.equal(isAdmin, false);
     });
     it('allows an admin to add a store owner', async () => {
