@@ -78,24 +78,14 @@
   "ast": {
     "absolutePath": "/Users/clementbalestrat/Workspace/final-project-clementbalestrat/contracts/Migrations.sol",
     "exportedSymbols": {
-      "Migrations": [
-        924
-      ]
+      "Migrations": [924]
     },
     "id": 925,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 869,
-        "literals": [
-          "solidity",
-          ">=",
-          "0.4",
-          ".21",
-          "<",
-          "0.6",
-          ".0"
-        ],
+        "literals": ["solidity", ">=", "0.4", ".21", "<", "0.6", ".0"],
         "nodeType": "PragmaDirective",
         "src": "0:32:1"
       },
@@ -106,9 +96,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 924,
-        "linearizedBaseContracts": [
-          924
-        ],
+        "linearizedBaseContracts": [924],
         "name": "Migrations",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -486,9 +474,7 @@
               "src": "403:109:1",
               "statements": [
                 {
-                  "assignments": [
-                    911
-                  ],
+                  "assignments": [911],
                   "declarations": [
                     {
                       "constant": false,
@@ -727,24 +713,14 @@
   "legacyAST": {
     "absolutePath": "/Users/clementbalestrat/Workspace/final-project-clementbalestrat/contracts/Migrations.sol",
     "exportedSymbols": {
-      "Migrations": [
-        924
-      ]
+      "Migrations": [924]
     },
     "id": 925,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 869,
-        "literals": [
-          "solidity",
-          ">=",
-          "0.4",
-          ".21",
-          "<",
-          "0.6",
-          ".0"
-        ],
+        "literals": ["solidity", ">=", "0.4", ".21", "<", "0.6", ".0"],
         "nodeType": "PragmaDirective",
         "src": "0:32:1"
       },
@@ -755,9 +731,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 924,
-        "linearizedBaseContracts": [
-          924
-        ],
+        "linearizedBaseContracts": [924],
         "name": "Migrations",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1135,9 +1109,7 @@
               "src": "403:109:1",
               "statements": [
                 {
-                  "assignments": [
-                    911
-                  ],
+                  "assignments": [911],
                   "declarations": [
                     {
                       "constant": false,
