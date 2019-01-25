@@ -2,7 +2,7 @@ const { assertEventEqual } = require('../utils/testUtils');
 const MarketPlace = artifacts.require('MarketPlace');
 
 contract('MarketPlace', async accounts => {
-  const [ owner, account1, account2, storeOwner] = accounts;
+  const [owner, account1, account2, storeOwner] = accounts;
   let marketPlace;
 
   beforeEach(async () => {
@@ -12,29 +12,39 @@ contract('MarketPlace', async accounts => {
   describe('when admin', () => {
     it('allows an admin to add another admin', async () => {
       await marketPlace.addAdmin(account1, { from: owner });
-      const isAdmin = await marketPlace.administrators(account1);
+      const isAdmin = await marketPlace.administratorsByAddress(account1);
       assert.equal(isAdmin, true);
     });
     it('allows an admin to remove another admin', async () => {
       await marketPlace.addAdmin(account1, { from: owner });
-      let isAdmin = await marketPlace.administrators(account1);
+      let isAdmin = await marketPlace.administratorsByAddress(account1);
       assert.equal(isAdmin, true);
       await marketPlace.removeAdmin(account1, { from: owner });
-      isAdmin = await marketPlace.administrators(account1);
+      isAdmin = await marketPlace.administratorsByAddress(account1);
       assert.equal(isAdmin, false);
     });
     it('allows an admin to add a store owner', async () => {
       await marketPlace.addStoreOwner(account2, { from: owner });
-      const isStoreOwner = await marketPlace.storeOwners(account2);
+      const isStoreOwner = await marketPlace.storeOwnersByAddress(account2);
       assert.equal(isStoreOwner, true);
     });
     it('allows an admin to remove a store owner', async () => {
       await marketPlace.addStoreOwner(account2, { from: owner });
-      let isStoreOwner = await marketPlace.storeOwners(account2);
+      let isStoreOwner = await marketPlace.storeOwnersByAddress(account2);
       assert.equal(isStoreOwner, true);
       await marketPlace.removeStoreOwner(account2, { from: owner });
-      isStoreOwner = await marketPlace.storeOwners(account2);
+      isStoreOwner = await marketPlace.storeOwnersByAddress(account2);
       assert.equal(isStoreOwner, false);
+    });
+    it('allows to see all the admin addresses', async () => {
+      const admins = await marketPlace.getAdministrators();
+      assert.equal(admins[0], owner);
+    });
+
+    it('allows to see all the store owner addresses', async () => {
+      await marketPlace.addStoreOwner(account2, { from: owner });
+      const storeOwners = await marketPlace.getStoreOwners();
+      assert.equal(storeOwners[0], account2);
     });
   });
 

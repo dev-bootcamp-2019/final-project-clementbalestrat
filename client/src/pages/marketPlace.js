@@ -34,13 +34,14 @@ class MarketPlace extends Component {
 
   renderPageContent() {
     const { activeView } = this.state;
+    const { contract, accounts } = this.props;
     switch (activeView) {
       case 'index':
-        return <Stores />;
+        return <Stores contract={contract} accounts={accounts} />;
       case 'storeOwner':
-        return <StoreOwnerPanel />;
+        return <StoreOwnerPanel contract={contract} accounts={accounts} />;
       case 'admin':
-        return <AdminPanel />;
+        return <AdminPanel contract={contract} accounts={accounts} />;
       default:
         return <Stores />;
     }

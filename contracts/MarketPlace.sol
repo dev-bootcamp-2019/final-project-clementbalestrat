@@ -9,8 +9,11 @@ import "./Proxyable.sol";
 contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     using SafeMath for uint256;
-    mapping (address => bool) public administrators;
-    mapping (address => bool) public storeOwners;
+
+    address[] public administrators;
+    address[] public storeOwners;
+    mapping (address => bool) public administratorsByAddress;
+    mapping (address => bool) public storeOwnersByAddress;
 
     bytes32[] private storefronts;
     mapping (address => bytes32[]) public storefrontsByOwner;
@@ -45,21 +48,23 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     event ItemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
     event ItemSold(bytes32 storeId, bytes32 itemId, uint qty);
 
-    modifier onlyAdmin() {require(administrators[msg.sender] == true, "Sender not authorized."); _;}
-    modifier onlyStoreOwner() {require(storeOwners[msg.sender] == true, "Sender not authorized."); _;}
+    modifier onlyAdmin() {require(administratorsByAddress[msg.sender] == true, "Sender not authorized."); _;}
+    modifier onlyStoreOwner() {require(storeOwnersByAddress[msg.sender] == true, "Sender not authorized."); _;}
     modifier onlyStorefrontOwner(bytes32 id) {require(storefrontsById[id].owner == msg.sender, "Sender not authorized."); _;}
 
     constructor(address payable _proxy)
     Proxyable(_proxy)
     public {
-        administrators[msg.sender] = true;
+        administratorsByAddress[msg.sender] = true;
+        administrators.push(msg.sender);
     }
 
     function addAdmin(address addr)
     public
     onlyAdmin()
     returns(bool) {
-        administrators[addr] = true;
+        administratorsByAddress[addr] = true;
+        administrators.push(addr);
         emit AdminAdded(addr);
         return true;
     }
@@ -68,16 +73,38 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     public
     onlyAdmin()
     returns(bool) {
-        administrators[addr] = false;
+        administratorsByAddress[addr] = false;
+        uint adminCount = administrators.length;
+        for(uint i = 0; i < adminCount; i++) {
+            if (administrators[i] == addr) {
+                administrators[i] = administrators[adminCount-1];
+                delete administrators[adminCount-1];
+                administrators.length --;
+                break;
+            }
+        }
         emit AdminRemoved(addr);
         return true;
+    }
+
+    function getAdministrators()
+    public
+    view
+    returns(address[] memory) {
+        uint adminCount = administrators.length;
+        address[] memory admins = new address[](adminCount);
+        for (uint i = 0; i < adminCount; i++) {
+            admins[i] = administrators[i];
+        }
+        return admins;
     }
 
     function addStoreOwner(address addr)
     public
     onlyAdmin()
     returns(bool) {
-        storeOwners[addr] = true;
+        storeOwnersByAddress[addr] = true;
+        storeOwners.push(addr);
         emit StoreOwnerAdded(addr);
         return true;
     }
@@ -86,9 +113,30 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     public
     onlyAdmin()
     returns(bool) {
-        storeOwners[addr] = false;
+        storeOwnersByAddress[addr] = false;
+        uint ownerCount = storeOwners.length;
+        for(uint i = 0; i < ownerCount; i++) {
+            if (storeOwners[i] == addr) {
+                storeOwners[i] = storeOwners[ownerCount-1];
+                delete storeOwners[ownerCount-1];
+                storeOwners.length --;
+                break;
+            }
+        }
         emit StoreOwnerRemoved(addr);
         return true;
+    }
+
+    function getStoreOwners()
+    public
+    view
+    returns(address[] memory) {
+        uint storeOwnerCount = storeOwners.length;
+        address[] memory owners = new address[](storeOwnerCount);
+        for (uint i = 0; i < storeOwnerCount; i++) {
+            owners[i] = storeOwners[i];
+        }
+        return owners;
     }
 
     function createStore(string memory name)

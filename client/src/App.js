@@ -4,7 +4,7 @@ import getWeb3 from './utils/getWeb3';
 import { ethers, Contract } from 'ethers';
 import MarketPlace from './pages/marketPlace';
 
-const SMART_CONTRACT_ADDR = '0x8d0e7A6539c97Cc413b0108cF60252A25F6cCa94';
+const SMART_CONTRACT_ADDR = '0x87E5C6b1CBb33B8faD2C04D9a87f6BDb7d743217';
 
 class App extends Component {
   state = { accounts: null, contract: null };
@@ -23,7 +23,6 @@ class App extends Component {
         signer
       );
       const accounts = await web3Provider.listAccounts();
-
       this.setState({
         contract,
         accounts,
@@ -35,7 +34,7 @@ class App extends Component {
 
   render() {
     const { contract, accounts } = this.state;
-    if (!this.state.accounts) {
+    if (!accounts || !contract) {
       return (
         <div style={{ textAlign: 'center' }}>
           Loading Web3, accounts, and contract...
