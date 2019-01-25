@@ -23,7 +23,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     struct Storefront {
         bytes32 id;
-        string name;
+        bytes32 name;
         address owner;
         uint balance;
     }
@@ -39,7 +39,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     event AdminRemoved(address admin);
     event StoreOwnerAdded(address storeOwner);
     event StoreOwnerRemoved(address storeOwner);
-    event StoreCreated(bytes32 id, string name, address owner);
+    event StoreCreated(bytes32 id, bytes32 name, address owner);
     event StoreRemoved(bytes32 id);
     event BalanceWithdrawn(bytes32 id, uint balance);
     event ItemAdded(bytes32 id, string name, uint price, uint qty);
@@ -139,7 +139,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         return owners;
     }
 
-    function createStore(string memory name)
+    function createStore(bytes32 name)
     public
     onlyStoreOwner()
     returns(bytes32) {
@@ -197,6 +197,23 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         delete storefrontsById[storeId];
         emit StoreRemoved(storeId);
         return storeId;
+    }
+
+    function getOwnerStorefronts(address owner)
+    public
+    view
+    returns(bytes32[] memory, bytes32[] memory, uint[] memory) {
+        uint storeCount = storefrontsByOwner[owner].length;
+        bytes32[] memory ids = new bytes32[](storeCount);
+        bytes32[] memory names = new bytes32[](storeCount);
+        uint[] memory balances = new uint[](storeCount);
+        for(uint i = 0; i < storeCount; i++) {
+            bytes32 storeId = storefrontsByOwner[owner][i];
+            ids[i] = storefrontsById[storeId].id;
+            names[i] = storefrontsById[storeId].name;
+            balances[i] = storefrontsById[storeId].balance;
+        }
+        return (ids, names, balances);
     }
 
     function addItemToInventory(bytes32 storeId, string memory itemName, uint itemPrice, uint itemQuantity)
