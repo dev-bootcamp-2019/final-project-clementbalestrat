@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import './adminPanel.css';
+import Navigation from '../../components/navigation';
+import './admin.css';
 
-class AdminPanel extends Component {
+class AdminPage extends Component {
   constructor() {
     super();
     this.state = {
@@ -84,7 +85,8 @@ class AdminPanel extends Component {
 
   renderList(type) {
     const typeToList = this.state[type];
-    if (!typeToList || typeToList.length === 0) return <div className="listIsEmpty">no {type} yet</div>;
+    if (!typeToList || typeToList.length === 0)
+      return <div className="listIsEmpty">no {type} yet</div>;
     return (
       <ul>
         {typeToList.map((address, i) => {
@@ -157,6 +159,7 @@ class AdminPanel extends Component {
     const { accounts } = this.props;
     return (
       <div>
+        <Navigation />
         <h1>Admin Page</h1>
         <div>Your address: {accounts[0]}</div>
         <div>{this.renderSections()}</div>
@@ -165,4 +168,4 @@ class AdminPanel extends Component {
   }
 }
 
-export default AdminPanel;
+export default AdminPage;

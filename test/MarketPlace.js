@@ -71,23 +71,6 @@ contract('MarketPlace', async accounts => {
       store = await marketPlace.storefrontsById(storeId);
       assert.equal(store.id, 0);
     });
-    it('allows a store owner to add an item to a store inventory', async () => {
-      await marketPlace.createStore('My New Store', {
-        from: storeOwner,
-      });
-      const storeId = await marketPlace.storefrontsByOwner(storeOwner, 0);
-      // await marketPlace.addItemToInventory(
-      //   storeId,
-      //   'a brand new item',
-      //   20,
-      //   10,
-      //   { from: storeOwner }
-      // );
-    });
-    it('allows a store owner to remove an item to a store inventory', async () => {});
-    it('allows a store owner to update the price of an item', async () => {});
-    it('allows a store owner to update the quantity of an item', async () => {});
-    it('allows a store owner to withdraw the balance of an item', async () => {});
   });
 
   describe('when buyer', () => {

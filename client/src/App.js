@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import MarketPlaceContract from './contracts/MarketPlace.json';
+import { Switch, Route, HashRouter } from 'react-router-dom';
 import getWeb3 from './utils/getWeb3';
 import { ethers, Contract } from 'ethers';
 import MarketPlace from './pages/marketPlace';
+import AdminPage from './pages/adminPage';
+import StoreOwnerPage from './pages/storeOwnerPage';
+import Navigation from './components/navigation';
+import './App.css';
 
 const SMART_CONTRACT_ADDR = '0x87E5C6b1CBb33B8faD2C04D9a87f6BDb7d743217';
 
@@ -41,7 +46,34 @@ class App extends Component {
         </div>
       );
     }
-    return <MarketPlace contract={contract} accounts={accounts} />;
+    return (
+      <div className="App">
+        <h1>Decentralized MarketPlace</h1>
+        <HashRouter>
+          <Switch>
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <MarketPlace contract={contract} accounts={accounts} />
+              )}
+            />
+            <Route
+              path="/admin"
+              component={() => (
+                <AdminPage contract={contract} accounts={accounts} />
+              )}
+            />
+            <Route
+              path="/storeOwner"
+              component={() => (
+                <StoreOwnerPage contract={contract} accounts={accounts} />
+              )}
+            />
+          </Switch>
+        </HashRouter>
+      </div>
+    );
   }
 }
 
