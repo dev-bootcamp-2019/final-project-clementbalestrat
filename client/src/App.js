@@ -6,6 +6,7 @@ import { ethers, Contract } from 'ethers';
 import MarketPlace from './pages/marketPlace';
 import AdminPage from './pages/adminPage';
 import StoreOwnerPage from './pages/storeOwnerPage';
+import StorePage from './pages/storePage';
 import Navigation from './components/navigation';
 import './App.css';
 
@@ -54,20 +55,43 @@ class App extends Component {
             <Route
               exact
               path="/"
-              component={() => (
-                <MarketPlace contract={contract} accounts={accounts} />
+              render={props => (
+                <MarketPlace
+                  {...props}
+                  contract={contract}
+                  accounts={accounts}
+                />
               )}
             />
             <Route
               path="/admin"
-              component={() => (
-                <AdminPage contract={contract} accounts={accounts} />
+              render={props => (
+                <AdminPage {...props} contract={contract} accounts={accounts} />
               )}
             />
             <Route
               path="/storeOwner"
-              component={() => (
-                <StoreOwnerPage contract={contract} accounts={accounts} />
+              render={props => (
+                <StoreOwnerPage
+                  {...props}
+                  contract={contract}
+                  accounts={accounts}
+                />
+              )}
+            />
+            <Route
+              path="/store/:storeId"
+              render={props => (
+                <StorePage {...props} contract={contract} accounts={accounts} />
+              )}
+            />
+            <Route
+              render={props => (
+                <MarketPlace
+                  {...props}
+                  contract={contract}
+                  accounts={accounts}
+                />
               )}
             />
           </Switch>
