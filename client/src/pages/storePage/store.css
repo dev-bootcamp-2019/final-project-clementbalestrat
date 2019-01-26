@@ -1,0 +1,34 @@
+.itemInput {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.itemInput input {
+  width: 300px;
+  height: 35px;
+  padding: 0 10px;
+  margin-left: 20px;
+}
+
+.inventoryTable {
+  width: 100%;
+}
+
+.inventoryTable tr {
+  cursor: pointer;
+}
+
+.inventoryTable tr:hover {
+  background-color: gray;
+}
+
+.inventoryTable tr td:first-child,
+.inventoryTable tr th:first-child {
+  text-align: left;
+}
+
+.inventoryTable td {
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid black;
+}

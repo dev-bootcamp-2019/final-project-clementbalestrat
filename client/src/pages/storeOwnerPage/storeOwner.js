@@ -14,6 +14,7 @@ class StoreOwnerPage extends Component {
     this.onStoreNameChange = this.onStoreNameChange.bind(this);
     this.createStore = this.createStore.bind(this);
     this.deleteStore = this.deleteStore.bind(this);
+    this.withdrawBalance = this.withdrawBalance.bind(this);
   }
 
   async refreshData() {
@@ -67,6 +68,20 @@ class StoreOwnerPage extends Component {
     };
   }
 
+  withdrawBalance(storeId) {
+    return async () => {
+      const { contract } = this.props;
+      try {
+        await contract.widthdrawStorefrontBalance(storeId);
+        setTimeout(() => {
+          this.refreshData();
+        }, 5000);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  }
+
   renderStoreListSection() {
     const { stores } = this.state;
     if (!stores || stores.length === 0)
@@ -81,6 +96,7 @@ class StoreOwnerPage extends Component {
               <th>Name</th>
               <th>Balance</th>
               <th />
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -93,6 +109,11 @@ class StoreOwnerPage extends Component {
                   <td>{store.balance}</td>
                   <td>
                     <button onClick={this.deleteStore(store.id)}>Remove</button>
+                  </td>
+                  <td>
+                    <button onClick={this.withdrawBalance(store.id)}>
+                      Withdraw balance
+                    </button>
                   </td>
                 </tr>
               );

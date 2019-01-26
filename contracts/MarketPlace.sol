@@ -19,7 +19,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     mapping (address => bytes32[]) public storefrontsByOwner;
     mapping (bytes32 => Storefront) public storefrontsById;
     mapping(bytes32 => bytes32[]) private inventoryByStorefrontId;
-    mapping(bytes32 => Item) private itemById;
+    mapping(bytes32 => Item) private itemsById;
 
     struct Storefront {
         bytes32 id;
@@ -30,7 +30,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
 
     struct Item {
         bytes32 id;
-        string name;
+        bytes32 name;
         uint price;
         uint quantity;
     }
@@ -42,7 +42,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     event StoreCreated(bytes32 id, bytes32 name, address owner);
     event StoreRemoved(bytes32 id);
     event BalanceWithdrawn(bytes32 id, uint balance);
-    event ItemAdded(bytes32 id, string name, uint price, uint qty);
+    event ItemAdded(bytes32 id, bytes32 name, uint price, uint qty);
     event ItemRemoved(bytes32 id);
     event ItemPriceUpdated(bytes32 id, uint newPrice, uint oldPrice);
     event ItemQuantityUpdated(bytes32 id, uint newQty, uint oldQty);
@@ -160,7 +160,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         // Delete all the items from the store inventory
         for (uint i = 0; i < inventoryByStorefrontId[storeId].length; i++) {
             bytes32 itemId = inventoryByStorefrontId[storeId][i];
-            delete itemById[itemId];
+            delete itemsById[itemId];
         }
 
         // Delete the store inventory
@@ -217,13 +217,13 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         return (ids, names, balances);
     }
 
-    function addItemToInventory(bytes32 storeId, string memory itemName, uint itemPrice, uint itemQuantity)
+    function addItemToInventory(bytes32 storeId, bytes32 itemName, uint itemPrice, uint itemQuantity)
     public
     onlyStorefrontOwner(storeId)
     returns(bytes32) {
         bytes32 itemId = keccak256(abi.encodePacked(msg.sender, itemName, now));
         Item memory i = Item(itemId, itemName, itemPrice, itemQuantity);
-        itemById[itemId] = i;
+        itemsById[itemId] = i;
         inventoryByStorefrontId[storeId].push(itemId);
         emit ItemAdded(itemId, itemName, itemPrice, itemQuantity);
         return itemId;
@@ -239,11 +239,12 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
             if (inventoryByStorefrontId[storeId][i] == storeId) {
                 inventoryByStorefrontId[storeId][i] = inventoryByStorefrontId[storeId][itemCount-1];
                 delete inventoryByStorefrontId[storeId][itemCount-1];
+                inventoryByStorefrontId[storeId].length --;
                 break;
             }
         }
         //Remove item from items mapping
-        delete itemById[itemId];
+        delete itemsById[itemId];
         emit ItemRemoved(itemId);
         return itemId;
     }
@@ -252,8 +253,8 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     public
     onlyStorefrontOwner(storeId)
     returns(bytes32) {
-        uint oldPrice = itemById[itemId].price;
-        itemById[itemId].price = newPrice;
+        uint oldPrice = itemsById[itemId].price;
+        itemsById[itemId].price = newPrice;
         emit ItemPriceUpdated(itemId, newPrice, oldPrice);
         return itemId;
     }
@@ -262,8 +263,8 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     public
     onlyStorefrontOwner(storeId)
     returns(bytes32) {
-        uint oldQty = itemById[itemId].quantity;
-        itemById[itemId].quantity = newQty;
+        uint oldQty = itemsById[itemId].quantity;
+        itemsById[itemId].quantity = newQty;
         emit ItemQuantityUpdated(itemId, newQty, oldQty);
         return itemId;
     }
@@ -287,11 +288,31 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         return storefrontsByOwner[owner].length;
     }
 
+    function getStorefrontInventory(bytes32 _storeId)
+    public
+    view
+    returns(bytes32[] memory, bytes32[] memory, uint[] memory, uint[] memory)
+    {
+        bytes32[] memory inventory = inventoryByStorefrontId[_storeId];
+        uint inventorySize = inventory.length;
+        bytes32[] memory itemIds = new bytes32[](inventorySize);
+        bytes32[] memory itemNames = new bytes32[](inventorySize);
+        uint[] memory itemQuantities = new uint[](inventorySize);
+        uint[] memory itemPrices = new uint[](inventorySize);
+        for(uint i = 0; i < inventorySize; i++) {
+            itemIds[i] = itemsById[inventory[i]].id;
+            itemNames[i] = itemsById[inventory[i]].name;
+            itemQuantities[i] = itemsById[inventory[i]].quantity;
+            itemPrices[i] = itemsById[inventory[i]].price;
+        }
+        return (itemIds, itemNames, itemQuantities, itemPrices);
+    }
+
     function purchaseItem(bytes32 storeId, bytes32 itemId, uint quantity)
     public
     payable
     returns(bool) {
-        Item memory item = itemById[itemId];
+        Item memory item = itemsById[itemId];
         uint totalPrice = item.price.mul(quantity);
         require(msg.value >= totalPrice, "msg.value must be greater or equal than total price");
         require(item.quantity >= quantity, "Item quantity is not enough");
