@@ -75,7 +75,26 @@ contract('MarketPlace', async accounts => {
     });
   });
 
-  describe('when buyer', () => {
-    it('allows a buyer to purchase an item', async () => {});
+  describe.only('when buyer', () => {
+    var storefrontId;
+    beforeEach(async () => {
+      await marketPlace.addStoreOwner(storeOwner, { from: owner });
+      const storeName = ethers.utils.formatBytes32String('My New Store');
+      const transaction = await marketPlace.createStore(storeName, {
+        from: storeOwner,
+      });
+      storefrontId = await marketPlace.storefronts(0);
+      await marketPlace.addItemToInventory(
+        storefrontId,
+        ethers.utils.formatBytes32String('test'),
+        '100',
+        2,
+        { from: storeOwner }
+      );
+    });
+    it('allows a buyer to purchase an item', async () => {
+      const itemId = await marketPlace.inventoryByStorefrontId(storefrontId, 0);
+      await marketPlace.purchaseItem(storefrontId, itemId, 2);
+    });
   });
 });

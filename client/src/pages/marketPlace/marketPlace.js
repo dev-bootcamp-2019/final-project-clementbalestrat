@@ -31,10 +31,10 @@ class MarketPlace extends Component {
   }
 
   render() {
-    const { accounts } = this.props;
+    const { accounts, isAdmin, isStoreOwner } = this.props;
     return (
       <div className="marketPlace">
-        <Navigation />
+        <Navigation isAdmin={isAdmin} isStoreOwner={isStoreOwner} />
         <h1>Market place page</h1>
       </div>
     );

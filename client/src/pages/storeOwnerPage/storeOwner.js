@@ -140,10 +140,10 @@ class StoreOwnerPage extends Component {
   }
 
   render() {
-    const { accounts } = this.props;
+    const { accounts, isAdmin, isStoreOwner } = this.props;
     return (
       <div className="marketPlace">
-        <Navigation />
+        <Navigation isAdmin={isAdmin} isStoreOwner={isStoreOwner} />
         <h1>Store Owner page</h1>
         <div>Your address: {accounts[0]}</div>
         <div>{this.renderStoreListSection()}</div>

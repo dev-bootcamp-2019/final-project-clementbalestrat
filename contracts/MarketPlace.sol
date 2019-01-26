@@ -15,10 +15,10 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
     mapping (address => bool) public administratorsByAddress;
     mapping (address => bool) public storeOwnersByAddress;
 
-    bytes32[] private storefronts;
+    bytes32[] public storefronts;
     mapping (address => bytes32[]) public storefrontsByOwner;
     mapping (bytes32 => Storefront) public storefrontsById;
-    mapping(bytes32 => bytes32[]) private inventoryByStorefrontId;
+    mapping(bytes32 => bytes32[]) public inventoryByStorefrontId;
     mapping(bytes32 => Item) private itemsById;
 
     struct Storefront {

@@ -3,6 +3,9 @@ import { ethers } from 'ethers';
 import Navigation from '../../components/navigation';
 import './store.css';
 
+const GAZ_LIMIT = 100000;
+const GAZ_PRICE = 20000;
+
 class StorePage extends Component {
   constructor() {
     super();
@@ -44,8 +47,8 @@ class StorePage extends Component {
           mappedInventory.push({
             id,
             name: ethers.utils.parseBytes32String(names[i]),
-            quantity: quantities[i].toString(),
-            price: prices[i].toString(),
+            quantity: Number(ethers.utils.formatEther(quantities[i])),
+            price: ethers.utils.formatEther(prices[i]),
           });
         });
         this.setState({
@@ -90,8 +93,8 @@ class StorePage extends Component {
       await contract.addItemToInventory(
         store.id,
         itemNameBytes32,
-        itemPrice,
-        itemQuantity
+        ethers.utils.parseEther(itemPrice),
+        ethers.utils.parseEther(itemQuantity)
       );
       this.setState({ addItemError: false });
       setTimeout(this.refreshData, 5000);
@@ -163,13 +166,18 @@ class StorePage extends Component {
     };
   }
 
-  purchaseItem(itemId) {
+  purchaseItem(item) {
     return async e => {
       e.stopPropagation();
       const { contract } = this.props;
       const { store } = this.state;
       try {
-        await contract.purchaseItem(store.id, itemId, '1');
+        console.log(store.id, item.id);
+        await contract.purchaseItem(store.id, item.id, 1, {
+          value: ethers.utils.parseEther(item.price),
+          gasLimit: GAZ_LIMIT,
+          gasPrice: GAZ_PRICE,
+        });
         setTimeout(this.refreshData, 5000);
       } catch (e) {
         console.log(e);
@@ -209,7 +217,7 @@ class StorePage extends Component {
           <td>{item.quantity}</td>
           <td>{item.price}</td>
           <td>
-            <button onClick={this.purchaseItem(item.id)}>Buy</button>
+            <button onClick={this.purchaseItem(item)}>Buy</button>
             <button onClick={this.removeItem(item.id)}>Remove</button>
           </td>
         </tr>
@@ -230,7 +238,7 @@ class StorePage extends Component {
             <tr>
               <th>Name</th>
               <th>Quantity</th>
-              <th>Price</th>
+              <th>Price (ETH)</th>
               <th />
             </tr>
           </thead>
