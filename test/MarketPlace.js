@@ -1,4 +1,5 @@
 const { assertEventEqual } = require('../utils/testUtils');
+const ethers = require('ethers');
 const MarketPlace = artifacts.require('MarketPlace');
 
 contract('MarketPlace', async accounts => {
@@ -53,11 +54,12 @@ contract('MarketPlace', async accounts => {
       await marketPlace.addStoreOwner(storeOwner, { from: owner });
     });
     it('allows a store owner to create a store', async () => {
-      const transaction = await marketPlace.createStore('My New Store', {
+      const storeName = ethers.utils.formatBytes32String('My New Store');
+      const transaction = await marketPlace.createStore(storeName, {
         from: storeOwner,
       });
       assertEventEqual(transaction, 'StoreCreated', {
-        name: 'My New Store',
+        name: storeName,
         owner: storeOwner,
       });
     });

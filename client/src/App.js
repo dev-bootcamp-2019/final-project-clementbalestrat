@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import MarketPlaceContract from './contracts/MarketPlace.json';
 import { Switch, Route, HashRouter } from 'react-router-dom';
-import getWeb3 from './utils/getWeb3';
 import { ethers, Contract } from 'ethers';
 import MarketPlace from './pages/marketPlace';
 import AdminPage from './pages/adminPage';
 import StoreOwnerPage from './pages/storeOwnerPage';
 import StorePage from './pages/storePage';
-import Navigation from './components/navigation';
 import './App.css';
 
-const SMART_CONTRACT_ADDR = '0xD3246f89f1Af5c888Fe3042a568586a2eA7acC55';
+const SMART_CONTRACT_ADDR = '0x63Ea05F04666f8d62a27870322fd72e62fB8B890';
 
 class App extends Component {
   state = { accounts: null, contract: null };

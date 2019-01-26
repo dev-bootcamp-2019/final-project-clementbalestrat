@@ -1,0 +1,14 @@
+.storeTable {
+  width: 100%;
+}
+
+.storeTable td {
+  text-align: center;
+}
+
+.storeNameInput {
+  width: 300px;
+  height: 35px;
+  padding: 0 10px;
+  margin-right: 20px;
+}

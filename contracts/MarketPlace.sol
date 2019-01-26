@@ -172,6 +172,7 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
             if (storefrontsByOwner[msg.sender][i] == storeId) {
                 storefrontsByOwner[msg.sender][i] = storefrontsByOwner[msg.sender][storefrontCount-1];
                 delete storefrontsByOwner[msg.sender][storefrontCount-1];
+                storefrontsByOwner[msg.sender].length --;
                 break;
             }
         }

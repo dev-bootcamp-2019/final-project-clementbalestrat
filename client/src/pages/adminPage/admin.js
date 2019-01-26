@@ -146,7 +146,7 @@ class AdminPage extends Component {
   renderSections() {
     return ['administrators', 'storeOwners'].map(type => {
       return (
-        <div className="panelSection">
+        <div key={type} className="panelSection">
           <h2>{type}</h2>
           {this.renderList(type)}
           {this.renderAddSection(type)}

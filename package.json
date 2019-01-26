@@ -7,6 +7,7 @@
     "test": "test"
   },
   "dependencies": {
+    "ethers": "^4.0.23",
     "openzeppelin-solidity": "^2.1.2"
   },
   "devDependencies": {

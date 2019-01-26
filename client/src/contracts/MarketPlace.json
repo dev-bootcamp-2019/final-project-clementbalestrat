@@ -30366,7 +30366,7 @@
           "type": "event",
           "signature": "0xee8258b57c171df72836d554f2addcb97a3be3652a6f9f58a431063096c0b840"
         },
-        "0xa250710eee6e35349d5c2ce9553447d29e8c7b14bf08f8d2fbb57fdf7e61548d": {
+        "0x11bbcd7e1ec9adb981103ba1d6654a2562461c2b0d8392714fb9345837e4be13": {
           "anonymous": false,
           "inputs": [
             {
@@ -30377,7 +30377,7 @@
             {
               "indexed": false,
               "name": "name",
-              "type": "string"
+              "type": "bytes32"
             },
             {
               "indexed": false,
@@ -30387,7 +30387,7 @@
           ],
           "name": "StoreCreated",
           "type": "event",
-          "signature": "0xa250710eee6e35349d5c2ce9553447d29e8c7b14bf08f8d2fbb57fdf7e61548d"
+          "signature": "0x11bbcd7e1ec9adb981103ba1d6654a2562461c2b0d8392714fb9345837e4be13"
         },
         "0x42b0d75ecaefba5bc0e1e6f2b225eb31d0fa0fd09119d3b850cada0841bc1d02": {
           "anonymous": false,
@@ -30612,38 +30612,15 @@
           "name": "PauserRemoved",
           "type": "event",
           "signature": "0xcd265ebaf09df2871cc7bd4133404a235ba12eff2041bb89d9c714a2621c7c7e"
-        },
-        "0x11bbcd7e1ec9adb981103ba1d6654a2562461c2b0d8392714fb9345837e4be13": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "name": "id",
-              "type": "bytes32"
-            },
-            {
-              "indexed": false,
-              "name": "name",
-              "type": "bytes32"
-            },
-            {
-              "indexed": false,
-              "name": "owner",
-              "type": "address"
-            }
-          ],
-          "name": "StoreCreated",
-          "type": "event",
-          "signature": "0x11bbcd7e1ec9adb981103ba1d6654a2562461c2b0d8392714fb9345837e4be13"
         }
       },
       "links": {},
-      "address": "0xD3246f89f1Af5c888Fe3042a568586a2eA7acC55",
-      "transactionHash": "0x92bcd30f4ef96ac28babacccfa8dec9483347b54de11c6b39e0dbded5addb257"
+      "address": "0x06b1D029F563cE6C4A11B4f33f6c565B2Ede8a6a",
+      "transactionHash": "0xc789893e0f3a1ee2a242f404060a55b5d21b32f523f1a8be6e754fdad9360b8a"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-25T07:43:55.188Z",
+  "updatedAt": "2019-01-26T03:52:09.069Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
