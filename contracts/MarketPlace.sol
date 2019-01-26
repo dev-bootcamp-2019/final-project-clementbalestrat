@@ -281,6 +281,22 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         }
     }
 
+    function getStorefronts()
+    public
+    view
+    returns(bytes32[] memory, bytes32[] memory, address[] memory) {
+        uint storeCount = storefronts.length;
+        bytes32[] memory ids = new bytes32[](storeCount);
+        bytes32[] memory names = new bytes32[](storeCount);
+        address[] memory owners = new address[](storeCount);
+        for(uint i = 0; i < storeCount; i ++) {
+            ids[i] = storefrontsById[storefronts[i]].id;
+            names[i] = storefrontsById[storefronts[i]].name;
+            owners[i] = storefrontsById[storefronts[i]].owner;
+        }
+        return(ids, names, owners);
+    }
+
     function getStorefrontCountByOwner(address owner)
 	public
 	view
@@ -308,12 +324,24 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
         return (itemIds, itemNames, itemQuantities, itemPrices);
     }
 
+    function multiplyDecimal(uint x, uint y)
+    internal
+    pure
+    returns (uint)
+    {
+        /* Divide by UNIT to remove the extra factor introduced by the product. */
+        return x.mul(y) / UNIT;
+    }
+
+    uint8 public constant decimals = 18;
+    uint public constant UNIT = 10 ** uint(decimals);
+
     function purchaseItem(bytes32 storeId, bytes32 itemId, uint quantity)
     public
     payable
     returns(bool) {
         Item memory item = itemsById[itemId];
-        uint totalPrice = item.price.mul(quantity);
+        uint totalPrice = multiplyDecimal(item.price, quantity);
         require(msg.value >= totalPrice, "msg.value must be greater or equal than total price");
         require(item.quantity >= quantity, "Item quantity is not enough");
 
@@ -321,11 +349,12 @@ contract MarketPlace is Ownable, Pausable, Mortal, Proxyable {
             msg.sender.transfer(msg.value - totalPrice);
         }
 
-        item.quantity -= quantity;
+        itemsById[itemId].quantity -= quantity;
         storefrontsById[storeId].balance += totalPrice;
         emit ItemSold(storeId, itemId, quantity);
         return true;
     }
+
 
 
 }

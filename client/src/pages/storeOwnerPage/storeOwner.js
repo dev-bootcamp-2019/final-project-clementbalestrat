@@ -26,7 +26,7 @@ class StoreOwnerPage extends Component {
     ids.forEach((idHex, i) => {
       const id = idHex;
       const name = ethers.utils.parseBytes32String(names[i]);
-      const balance = balances[i].toString();
+      const balance = ethers.utils.formatEther(balances[i]);
       stores.push({ id, name, balance });
     });
     this.setState({ stores });
@@ -94,7 +94,7 @@ class StoreOwnerPage extends Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Balance</th>
+              <th>Balance(ETH)</th>
               <th />
               <th />
             </tr>

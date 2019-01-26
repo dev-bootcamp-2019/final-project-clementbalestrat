@@ -8,10 +8,14 @@ import StoreOwnerPage from './pages/storeOwnerPage';
 import StorePage from './pages/storePage';
 import './App.css';
 
-const SMART_CONTRACT_ADDR = '0xb3989F080F91a181D04Ebd89A02dd9D340738E3d';
+const SMART_CONTRACT_ADDR = '0x6bE7cFAfDF3D86EB5175B0a16742308047FD1E11';
 
 class App extends Component {
-  state = { accounts: null, contract: null };
+  constructor() {
+    super();
+    this.state = { accounts: null, contract: null };
+    this.onOwnershipChange = this.onOwnershipChange.bind(this);
+  }
 
   componentDidMount = async () => {
     if (!window.web3 || !window.web3.currentProvider) return;
@@ -42,6 +46,18 @@ class App extends Component {
     }
   };
 
+  async onOwnershipChange() {
+    const { contract, accounts } = this.state;
+    const [isAdmin, isStoreOwner] = await Promise.all([
+      contract.administratorsByAddress(accounts[0]),
+      contract.storeOwnersByAddress(accounts[0]),
+    ]);
+    this.setState({
+      isAdmin,
+      isStoreOwner,
+    });
+  }
+
   render() {
     const { accounts, contract, isAdmin, isStoreOwner } = this.state;
     if (!accounts || !contract) {
@@ -53,7 +69,7 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Decentralized MarketPlace</h1>
+        <h1 style={{ margin: '40px 0 60px 0' }}>Decentralized Marketplace</h1>
         <HashRouter>
           <Switch>
             <Route
@@ -65,7 +81,11 @@ class App extends Component {
               path="/admin"
               render={props =>
                 isAdmin ? (
-                  <AdminPage {...props} {...this.state} />
+                  <AdminPage
+                    {...props}
+                    {...this.state}
+                    onOwnershipChange={this.onOwnershipChange}
+                  />
                 ) : (
                   <Redirect to={{ pathname: '/' }} />
                 )

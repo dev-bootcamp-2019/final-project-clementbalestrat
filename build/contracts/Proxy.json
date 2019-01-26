@@ -3083,7 +3083,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-26T08:24:20.361Z",
+  "updatedAt": "2019-01-26T13:53:36.634Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

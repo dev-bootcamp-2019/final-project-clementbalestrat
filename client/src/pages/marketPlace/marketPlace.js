@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { ethers } from 'ethers';
+import { Link } from 'react-router-dom';
 import Navigation from '../../components/navigation';
 
 import './marketPlace.css';
@@ -7,35 +9,62 @@ class MarketPlace extends Component {
   constructor() {
     super();
     this.state = {
-      activeView: 'index',
-      isStoreOwner: false,
-      isAdmin: false,
+      stores: null,
     };
-    this.setCurrentView = this.setCurrentView.bind(this);
   }
 
   async componentDidMount() {
     const { contract, accounts } = this.props;
-    const [isAdmin, isStoreOwner] = await Promise.all([
-      contract.administrators(accounts[0]),
-      contract.storeOwners(accounts[0]),
-    ]);
-
-    this.state({ isStoreOwner, isAdmin });
+    try {
+      const [ids, names, owners] = await contract.getStorefronts();
+      let stores = [];
+      ids.forEach((id, i) => {
+        const name = ethers.utils.parseBytes32String(names[i]);
+        stores.push({ id, name, owner: owners[i] });
+      });
+      this.setState({ stores });
+    } catch (e) {
+      console.log(e);
+    }
   }
-
-  setCurrentView(view) {
-    return () => {
-      this.setState({ activeView: view });
-    };
+  renderContent() {
+    const { stores } = this.state;
+    if (!stores || stores.length === 0) {
+      return <div styles={{ marginTop: '20px' }}>No stores created yet.</div>;
+    }
+    return (
+      <table className="storeTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {stores.map((store, i) => {
+            return (
+              <tr key={i}>
+                <td>{store.name}</td>
+                <td>{store.owner}</td>
+                <td>
+                  <Link to={`store/${store.id}`}>Visit</Link>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
   }
 
   render() {
-    const { accounts, isAdmin, isStoreOwner } = this.props;
+    const { isAdmin, isStoreOwner } = this.props;
     return (
       <div className="marketPlace">
         <Navigation isAdmin={isAdmin} isStoreOwner={isStoreOwner} />
         <h1>Market place page</h1>
+        {this.renderContent()}
       </div>
     );
   }

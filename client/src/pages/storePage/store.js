@@ -19,6 +19,7 @@ class StorePage extends Component {
       rowEdit: false,
       priceEdit: '',
       quantityEdit: '',
+      buyQuantity: 1,
     };
     this.addItem = this.addItem.bind(this);
     this.refreshData = this.refreshData.bind(this);
@@ -30,6 +31,7 @@ class StorePage extends Component {
     this.onPriceEditChange = this.onPriceEditChange.bind(this);
     this.removeItem = this.removeItem.bind(this);
     this.purchaseItem = this.purchaseItem.bind(this);
+    this.onQuantityChange = this.onQuantityChange.bind(this);
   }
 
   async refreshData() {
@@ -106,6 +108,8 @@ class StorePage extends Component {
 
   setEditRow(row) {
     return () => {
+      const { isStoreOwner } = this.props;
+      if (!isStoreOwner) return;
       this.setState({ rowEdit: row });
     };
   }
@@ -124,7 +128,11 @@ class StorePage extends Component {
       const { contract } = this.props;
       if (!quantityEdit || quantityEdit === '') return;
       try {
-        await contract.updateItemQuantity(itemId, store.id, quantityEdit);
+        await contract.updateItemQuantity(
+          itemId,
+          store.id,
+          ethers.utils.parseEther(quantityEdit)
+        );
         setTimeout(() => {
           this.refreshData();
           this.setState({ quantityEdit: '', rowEdit: false });
@@ -141,7 +149,11 @@ class StorePage extends Component {
       const { contract } = this.props;
       if (!priceEdit || priceEdit === '') return;
       try {
-        await contract.updateItemPrice(itemId, store.id, priceEdit);
+        await contract.updateItemPrice(
+          itemId,
+          store.id,
+          ethers.utils.parseEther(priceEdit)
+        );
         setTimeout(() => {
           this.refreshData();
           this.setState({ priceEdit: '', rowEdit: false });
@@ -170,14 +182,17 @@ class StorePage extends Component {
     return async e => {
       e.stopPropagation();
       const { contract } = this.props;
-      const { store } = this.state;
+      const { store, buyQuantity } = this.state;
       try {
-        console.log(store.id, item.id);
-        await contract.purchaseItem(store.id, item.id, 1, {
-          value: ethers.utils.parseEther(item.price),
+        const price = buyQuantity * Number(item.price);
+        const priceEther = ethers.utils.parseEther(price.toString());
+        const quantity = ethers.utils.parseEther(buyQuantity.toString());
+        await contract.purchaseItem(store.id, item.id, quantity, {
+          value: priceEther,
           gasLimit: GAZ_LIMIT,
           gasPrice: GAZ_PRICE,
         });
+        this.setState({ buyQuantity: 1 });
         setTimeout(this.refreshData, 5000);
       } catch (e) {
         console.log(e);
@@ -185,8 +200,13 @@ class StorePage extends Component {
     };
   }
 
+  onQuantityChange(e) {
+    this.setState({ buyQuantity: e.target.value });
+  }
+
   renderItemRow(item, i) {
-    const { rowEdit } = this.state;
+    const { rowEdit, buyQuantity } = this.state;
+    const { isStoreOwner } = this.props;
     if (rowEdit === i) {
       return (
         <tr onClick={this.setEditRow(i)} key={i}>
@@ -217,8 +237,20 @@ class StorePage extends Component {
           <td>{item.quantity}</td>
           <td>{item.price}</td>
           <td>
-            <button onClick={this.purchaseItem(item)}>Buy</button>
-            <button onClick={this.removeItem(item.id)}>Remove</button>
+            {isStoreOwner ? (
+              <button onClick={this.removeItem(item.id)}>Remove</button>
+            ) : (
+              <div>
+                <input
+                  style={{ marginRight: '10px' }}
+                  type="number"
+                  placeholder="Please enter a quantity"
+                  onChange={this.onQuantityChange}
+                  value={buyQuantity}
+                />
+                <button onClick={this.purchaseItem(item)}>Buy</button>
+              </div>
+            )}
           </td>
         </tr>
       );
@@ -249,7 +281,9 @@ class StorePage extends Component {
   }
 
   renderAddItemSection() {
+    const { isStoreOwner } = this.props;
     const { addItemError } = this.state;
+    if (!isStoreOwner) return;
     return (
       <div className="panelSection">
         <h4>Add an item to the store inventory</h4>
@@ -291,9 +325,10 @@ class StorePage extends Component {
   }
 
   render() {
+    const { isAdmin, isStoreOwner } = this.props;
     return (
       <div className="marketPlace">
-        <Navigation />
+        <Navigation isAdmin={isAdmin} isStoreOwner={isStoreOwner} />
         {this.renderTitle()}
         {this.renderItems()}
         {this.renderAddItemSection()}

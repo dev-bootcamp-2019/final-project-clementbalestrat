@@ -30,10 +30,11 @@ class AdminPage extends Component {
   }
 
   removeAdmin(address) {
-    const { contract } = this.props;
+    const { contract, onOwnershipChange } = this.props;
     return async () => {
       try {
         await contract.removeAdmin(address);
+        onOwnershipChange();
         setTimeout(() => {
           this.refreshData();
         }, 5000);
@@ -44,10 +45,11 @@ class AdminPage extends Component {
   }
 
   removeStoreOwner(address) {
-    const { contract } = this.props;
+    const { contract, onOwnershipChange } = this.props;
     return async () => {
       try {
         await contract.removeStoreOwner(address);
+        onOwnershipChange();
         setTimeout(() => {
           this.refreshData();
         }, 5000);
@@ -58,10 +60,11 @@ class AdminPage extends Component {
   }
 
   async addAdmin(address) {
-    const { contract } = this.props;
+    const { contract, onOwnershipChange } = this.props;
     const { adminAddress } = this.state;
     try {
       await contract.addAdmin(adminAddress);
+      onOwnershipChange();
       setTimeout(() => {
         this.refreshData();
       }, 5000);
@@ -71,10 +74,11 @@ class AdminPage extends Component {
   }
 
   async addStoreOwner(address) {
-    const { contract } = this.props;
+    const { contract, onOwnershipChange } = this.props;
     const { storeOwnerAddress } = this.state;
     try {
       await contract.addStoreOwner(storeOwnerAddress);
+      onOwnershipChange();
       setTimeout(() => {
         this.refreshData();
       }, 5000);
