@@ -49,7 +49,7 @@ contract('MarketPlace', async accounts => {
     });
   });
 
-  describe.only('when store owner', () => {
+  describe('when store owner', () => {
     beforeEach(async () => {
       await marketPlace.addStoreOwner(storeOwner, { from: owner });
     });
