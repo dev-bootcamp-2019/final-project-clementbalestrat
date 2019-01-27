@@ -47,17 +47,15 @@ modifier onlyStorefrontOwner(bytes32 _storeId) {require(storefrontsById[_storeId
 5. **Withdrawal pattern** Isolates the withdraw functionality to its own transaction. StoreOwners have to manually call `widthdrawStorefrontBalance` to get their store balance transferred, instead of having it done automatically after every purchase.
 
 ```
-function widthdrawStorefrontBalance(bytes32 _storeId)
+ function widthdrawStorefrontBalance(bytes32 _storeId)
     public
     onlyStorefrontOwner(_storeId)
     whenNotPaused()
     returns(bool) {
         uint storefrontBalance = storefrontsById[_storeId].balance;
-        if (storefrontBalance > 0) {
-            storefrontsById[_storeId].balance = 0;
-            msg.sender.transfer(storefrontBalance);
-            emit BalanceWithdrawn(_storeId, storefrontBalance);
-        }
+        require(storefrontBalance > 0, "Balance needs to be greater than 0");
+        storefrontsById[_storeId].balance = 0;
+        msg.sender.transfer(storefrontBalance);
+        emit BalanceWithdrawn(_storeId, storefrontBalance);
     }
-}
 ```

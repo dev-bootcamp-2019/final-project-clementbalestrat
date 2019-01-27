@@ -326,11 +326,11 @@ contract MarketPlace is Ownable, Pausable, Mortal {
     whenNotPaused()
     returns(bool) {
         uint storefrontBalance = storefrontsById[_storeId].balance;
-        if (storefrontBalance > 0) {
-            storefrontsById[_storeId].balance = 0;
-            msg.sender.transfer(storefrontBalance);
-            emit BalanceWithdrawn(_storeId, storefrontBalance);
-        }
+        require(storefrontBalance > 0, "Balance needs to be greater than 0");
+        storefrontsById[_storeId].balance = 0;
+        msg.sender.transfer(storefrontBalance);
+        emit BalanceWithdrawn(_storeId, storefrontBalance);
+
     }
 
     /** @dev Get all the created Storefronts.
