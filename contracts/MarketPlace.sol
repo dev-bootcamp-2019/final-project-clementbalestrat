@@ -477,7 +477,7 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         require(item.quantity >= _quantity, "Item quantity is not enough");
 
         if (msg.value > totalPrice) {
-            msg.sender.transfer(msg.value - totalPrice);
+            msg.sender.transfer(msg.value.sub(totalPrice));
         }
 
         itemsById[_itemId].quantity = itemsById[_itemId].quantity.sub(_quantity);
