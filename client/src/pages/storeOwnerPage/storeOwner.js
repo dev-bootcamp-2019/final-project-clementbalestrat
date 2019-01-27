@@ -72,7 +72,9 @@ class StoreOwnerPage extends Component {
     return async () => {
       const { contract } = this.props;
       try {
-        await contract.widthdrawStorefrontBalance(storeId);
+        await contract.widthdrawStorefrontBalance(storeId, {
+          gasLimit: 150000,
+        });
         setTimeout(() => {
           this.refreshData();
         }, 5000);
