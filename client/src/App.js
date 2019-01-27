@@ -8,7 +8,7 @@ import StoreOwnerPage from './pages/storeOwnerPage';
 import StorePage from './pages/storePage';
 import './App.css';
 
-const SMART_CONTRACT_ADDR = '0xE051B1340df111b2Bb23Adc9E94824310F39f512';
+const SMART_CONTRACT_ADDR = '0x2BB42B52f0069FA20C7bf3Ff866Ed664D04F0286';
 
 class App extends Component {
   constructor() {

@@ -33,7 +33,10 @@ class MarketPlace extends Component {
       return <div styles={{ marginTop: '20px' }}>No stores created yet.</div>;
     }
     return (
-      <table className="storeTable">
+      <table
+        style={{ width: '80%', margin: '50px auto 0 auto' }}
+        className="storeTable"
+      >
         <thead>
           <tr>
             <th>Name</th>
@@ -59,11 +62,12 @@ class MarketPlace extends Component {
   }
 
   render() {
-    const { isAdmin, isStoreOwner } = this.props;
+    const { isAdmin, isStoreOwner, accounts } = this.props;
     return (
       <div className="marketPlace">
         <Navigation isAdmin={isAdmin} isStoreOwner={isStoreOwner} />
         <h1>Market place page</h1>
+        <div>Your address: {accounts[0]}</div>
         {this.renderContent()}
       </div>
     );

@@ -274,7 +274,9 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         storefrontCount = storefronts.length;
         for(uint i = 0; i < storefrontCount; i++) {
             if (storefronts[i] == _storeId) {
-                delete storefronts[i];
+                storefronts[i] = storefronts[storefrontCount - 1];
+                delete storefronts[storefrontCount - 1];
+                storefronts.length --;
                 break;
             }
         }
@@ -385,7 +387,7 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         // Remove the item from inventory mapping
         uint itemCount = inventoryByStorefrontId[_storeId].length;
         for(uint i = 0; i < itemCount; i++) {
-            if (inventoryByStorefrontId[_storeId][i] == _storeId) {
+            if (inventoryByStorefrontId[_storeId][i] == _itemId) {
                 inventoryByStorefrontId[_storeId][i] = inventoryByStorefrontId[_storeId][itemCount-1];
                 delete inventoryByStorefrontId[_storeId][itemCount-1];
                 inventoryByStorefrontId[_storeId].length --;
