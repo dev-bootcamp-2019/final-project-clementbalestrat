@@ -3,8 +3,8 @@ import { ethers } from 'ethers';
 import Navigation from '../../components/navigation';
 import './store.css';
 
-const GAZ_LIMIT = 100000;
-const GAZ_PRICE = 20000;
+const GAZ_LIMIT = 200000;
+const GAZ_PRICE = 60000000000;
 
 class StorePage extends Component {
   constructor() {
