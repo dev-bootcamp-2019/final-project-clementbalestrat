@@ -6,7 +6,7 @@
 - `transfer` is used over `require(msg.sender.send())`
 - `keccak256` is used over `sha3`
 
-2. **Ownable** To secure admin only function, openzeppelin `Ownable` library has been used.
+2. **Ownable** To secure admin only functions, openzeppelin `Ownable` library has been used.
 
 3. **Pausable** Allows some of the critical parts of the contract to be stopped in case of a major issue, vulnerability or upgrade happening. openzeppelin `Pausable` library has been used.
 

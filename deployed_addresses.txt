@@ -1,10 +1,13 @@
-Ropsten
+Ropsten:
+MarketPlace.sol: 0x030ff8ef04b5f03fa1e9f08756498f38e35a123d
 https://ropsten.etherscan.io/address/0x030ff8ef04b5f03fa1e9f08756498f38e35a123d#code
-
+dApp: https://consensys-marketplace-ropsten.netlify.com
 
 Rinkeby
+MarketPlace.sol: 0xf9cf83fdf7c4dec13aee0156db910b0dd1ae19d1
 https://rinkeby.etherscan.io/address/0xf9cf83fdf7c4dec13aee0156db910b0dd1ae19d1#code
-https://consensys-marketplace-rinkeby.netlify.com
+dApp: https://consensys-marketplace-rinkeby.netlify.com
 
+IPFS (Rinkeby) https://ipfs.io/ipfs/QmZnuSkCcfP39GAdi5UfuSmvWCsR52Piw5n4TBSs2JX3fe/
 
-https://ipfs.io/ipfs/QmZnuSkCcfP39GAdi5UfuSmvWCsR52Piw5n4TBSs2JX3fe/
+Contracts on etherscan have been verified.
