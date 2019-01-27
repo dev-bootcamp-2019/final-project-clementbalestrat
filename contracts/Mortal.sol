@@ -11,7 +11,10 @@ contract Mortal is Ownable {
     /**
      * @notice Kill the contract
      */
-    function finish() public onlyOwner {
+    function kill() public onlyOwner {
+        emit SelfDestructed(msg.sender);
         selfdestruct(msg.sender);
     }
+
+    event SelfDestructed(address beneficiary);
 }

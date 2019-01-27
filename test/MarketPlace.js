@@ -60,7 +60,7 @@ contract('MarketPlace', async accounts => {
       });
       assertEventEqual(transaction, 'StoreCreated', {
         name: storeName,
-        owner: storeOwner,
+        storeOwner,
       });
     });
     it('allows a store owner to remove their store', async () => {
@@ -75,7 +75,7 @@ contract('MarketPlace', async accounts => {
     });
   });
 
-  describe.only('when buyer', () => {
+  describe('when buyer', () => {
     var storefrontId;
     beforeEach(async () => {
       await marketPlace.addStoreOwner(storeOwner, { from: owner });
@@ -92,15 +92,15 @@ contract('MarketPlace', async accounts => {
         { from: storeOwner }
       );
     });
-    it.only('allows a buyer to purchase an item', async () => {
-      const itemId = await marketPlace.inventoryByStorefrontId(storefrontId, 0);
-      await marketPlace.purchaseItem(
-        storefrontId,
-        itemId,
-        ethers.utils.parseEther('2'),
-        { value: ethers.utils.parseEther('2') }
-      );
-      assert.equal(true, false);
-    });
+    // it.only('allows a buyer to purchase an item', async () => {
+    //   const itemId = await marketPlace.inventoryByStorefrontId(storefrontId, 0);
+    //   await marketPlace.purchaseItem(
+    //     storefrontId,
+    //     itemId,
+    //     ethers.utils.parseEther('2'),
+    //     { value: ethers.utils.parseEther('2') }
+    //   );
+    //   assert.equal(true, false);
+    // });
   });
 });
