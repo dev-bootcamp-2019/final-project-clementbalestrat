@@ -14,7 +14,7 @@ class MarketPlace extends Component {
   }
 
   async componentDidMount() {
-    const { contract, accounts } = this.props;
+    const { contract } = this.props;
     try {
       const [ids, names, owners] = await contract.getStorefronts();
       let stores = [];

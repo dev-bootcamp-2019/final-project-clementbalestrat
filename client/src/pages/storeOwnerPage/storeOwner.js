@@ -15,6 +15,14 @@ class StoreOwnerPage extends Component {
     this.createStore = this.createStore.bind(this);
     this.deleteStore = this.deleteStore.bind(this);
     this.withdrawBalance = this.withdrawBalance.bind(this);
+    this.refreshData = this.refreshData.bind(this);
+  }
+
+  async listenToContractEvents() {
+    const { contract } = this.props;
+    contract.on('StoreCreated', this.refreshData);
+    contract.on('StoreRemoved', this.refreshData);
+    contract.on('BalanceWithdrawn', this.refreshData);
   }
 
   async refreshData() {
@@ -33,6 +41,7 @@ class StoreOwnerPage extends Component {
   }
   componentDidMount() {
     this.refreshData();
+    this.listenToContractEvents();
   }
 
   async createStore() {
@@ -42,9 +51,6 @@ class StoreOwnerPage extends Component {
     try {
       const nameToBytes32 = ethers.utils.formatBytes32String(storeName);
       await contract.createStore(nameToBytes32);
-      setTimeout(() => {
-        this.refreshData();
-      }, 5000);
     } catch (e) {
       console.log(e);
     }
@@ -59,9 +65,6 @@ class StoreOwnerPage extends Component {
       const { contract } = this.props;
       try {
         await contract.removeStore(storeId);
-        setTimeout(() => {
-          this.refreshData();
-        }, 5000);
       } catch (e) {
         console.log(e);
       }
@@ -75,9 +78,6 @@ class StoreOwnerPage extends Component {
         await contract.widthdrawStorefrontBalance(storeId, {
           gasLimit: 150000,
         });
-        setTimeout(() => {
-          this.refreshData();
-        }, 5000);
       } catch (e) {
         console.log(e);
       }
