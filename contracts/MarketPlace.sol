@@ -284,8 +284,8 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         // Withdraw Balance if needed.
         uint storefrontBalance = storefrontsById[_storeId].balance;
         if (storefrontBalance > 0) {
-            msg.sender.transfer(storefrontBalance);
             storefrontsById[_storeId].balance = 0;
+            msg.sender.transfer(storefrontBalance);
             emit BalanceWithdrawn(_storeId, storefrontBalance);
         }
 
@@ -326,11 +326,11 @@ contract MarketPlace is Ownable, Pausable, Mortal {
     whenNotPaused()
     returns(bool) {
         uint storefrontBalance = storefrontsById[_storeId].balance;
-        if (storefrontBalance > 0) {
-            msg.sender.transfer(storefrontBalance);
-            storefrontsById[_storeId].balance = 0;
-            emit BalanceWithdrawn(_storeId, storefrontBalance);
-        }
+        require(storefrontBalance > 0, "Balance needs to be greater than 0");
+        storefrontsById[_storeId].balance = 0;
+        msg.sender.transfer(storefrontBalance);
+        emit BalanceWithdrawn(_storeId, storefrontBalance);
+
     }
 
     /** @dev Get all the created Storefronts.
@@ -477,7 +477,7 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         require(item.quantity >= _quantity, "Item quantity is not enough");
 
         if (msg.value > totalPrice) {
-            msg.sender.transfer(msg.value - totalPrice);
+            msg.sender.transfer(msg.value.sub(totalPrice));
         }
 
         itemsById[_itemId].quantity = itemsById[_itemId].quantity.sub(_quantity);
