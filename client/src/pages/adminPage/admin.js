@@ -14,30 +14,37 @@ class AdminPage extends Component {
     this.addAdmin = this.addAdmin.bind(this);
     this.addStoreOwner = this.addStoreOwner.bind(this);
     this.onAddressChange = this.onAddressChange.bind(this);
+    this.refreshData = this.refreshData.bind(this);
+  }
+
+  async listenToContractEvents() {
+    const { contract } = this.props;
+    contract.on('AdminAdded', this.refreshData);
+    contract.on('AdminRemoved', this.refreshData);
+    contract.on('StoreOwnerAdded', this.refreshData);
+    contract.on('StoreOwnerRemoved', this.refreshData);
   }
 
   async refreshData() {
-    const { contract } = this.props;
+    const { contract, onOwnershipChange } = this.props;
     const [administrators, storeOwners] = await Promise.all([
       contract.getAdministrators(),
       contract.getStoreOwners(),
     ]);
+    onOwnershipChange();
     this.setState({ administrators, storeOwners });
   }
 
   componentDidMount() {
     this.refreshData();
+    this.listenToContractEvents();
   }
 
   removeAdmin(address) {
-    const { contract, onOwnershipChange } = this.props;
+    const { contract } = this.props;
     return async () => {
       try {
         await contract.removeAdmin(address);
-        onOwnershipChange();
-        setTimeout(() => {
-          this.refreshData();
-        }, 5000);
       } catch (e) {
         console.log(e);
       }
@@ -45,14 +52,10 @@ class AdminPage extends Component {
   }
 
   removeStoreOwner(address) {
-    const { contract, onOwnershipChange } = this.props;
+    const { contract } = this.props;
     return async () => {
       try {
         await contract.removeStoreOwner(address);
-        onOwnershipChange();
-        setTimeout(() => {
-          this.refreshData();
-        }, 5000);
       } catch (e) {
         console.log(e);
       }
@@ -60,28 +63,20 @@ class AdminPage extends Component {
   }
 
   async addAdmin(address) {
-    const { contract, onOwnershipChange } = this.props;
+    const { contract } = this.props;
     const { adminAddress } = this.state;
     try {
       await contract.addAdmin(adminAddress);
-      onOwnershipChange();
-      setTimeout(() => {
-        this.refreshData();
-      }, 5000);
     } catch (e) {
       console.log(e);
     }
   }
 
   async addStoreOwner(address) {
-    const { contract, onOwnershipChange } = this.props;
+    const { contract } = this.props;
     const { storeOwnerAddress } = this.state;
     try {
       await contract.addStoreOwner(storeOwnerAddress);
-      onOwnershipChange();
-      setTimeout(() => {
-        this.refreshData();
-      }, 5000);
     } catch (e) {
       console.log(e);
     }

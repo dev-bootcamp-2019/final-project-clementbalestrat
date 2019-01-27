@@ -34,6 +34,15 @@ class StorePage extends Component {
     this.onQuantityChange = this.onQuantityChange.bind(this);
   }
 
+  async listenToContractEvents() {
+    const { contract } = this.props;
+    contract.on('ItemAdded', this.refreshData);
+    contract.on('ItemRemoved', this.refreshData);
+    contract.on('ItemPriceUpdated', this.refreshData);
+    contract.on('ItemQuantityUpdated', this.refreshData);
+    contract.on('ItemSold', this.refreshData);
+  }
+
   async refreshData() {
     const { match, contract } = this.props;
     if (match.params && match.params.storeId) {
@@ -70,6 +79,7 @@ class StorePage extends Component {
 
   componentDidMount() {
     this.refreshData();
+    this.listenToContractEvents();
   }
 
   renderTitle() {
@@ -99,7 +109,6 @@ class StorePage extends Component {
         ethers.utils.parseEther(itemQuantity)
       );
       this.setState({ addItemError: false });
-      setTimeout(this.refreshData, 5000);
     } catch (e) {
       console.log(e);
       this.setState({ addItemError: true });
@@ -135,7 +144,7 @@ class StorePage extends Component {
         );
         setTimeout(() => {
           this.refreshData();
-          this.setState({ quantityEdit: '', rowEdit: false });
+          this.setState({ rowEdit: false });
         }, 5000);
       } catch (e) {
         console.log(e);
@@ -156,7 +165,7 @@ class StorePage extends Component {
         );
         setTimeout(() => {
           this.refreshData();
-          this.setState({ priceEdit: '', rowEdit: false });
+          this.setState({ rowEdit: false });
         }, 5000);
       } catch (e) {
         console.log(e);
