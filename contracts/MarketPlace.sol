@@ -284,8 +284,8 @@ contract MarketPlace is Ownable, Pausable, Mortal {
         // Withdraw Balance if needed.
         uint storefrontBalance = storefrontsById[_storeId].balance;
         if (storefrontBalance > 0) {
-            msg.sender.transfer(storefrontBalance);
             storefrontsById[_storeId].balance = 0;
+            msg.sender.transfer(storefrontBalance);
             emit BalanceWithdrawn(_storeId, storefrontBalance);
         }
 
@@ -327,8 +327,8 @@ contract MarketPlace is Ownable, Pausable, Mortal {
     returns(bool) {
         uint storefrontBalance = storefrontsById[_storeId].balance;
         if (storefrontBalance > 0) {
-            msg.sender.transfer(storefrontBalance);
             storefrontsById[_storeId].balance = 0;
+            msg.sender.transfer(storefrontBalance);
             emit BalanceWithdrawn(_storeId, storefrontBalance);
         }
     }

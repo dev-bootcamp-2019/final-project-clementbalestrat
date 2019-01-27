@@ -1,6 +1,6 @@
 # Marketplace dApp
 
-Final project for the Consensys Developer Bootcamp 2018. Smart contracts have been developed using Truffle v5.0.0 and Solidity compiler v0.5.0. Client is a react-app, created from react-truffle-box.
+Final project for the Consensys Developer Bootcamp 2018. Smart contracts have been developed using Truffle v5.0.0 and Solidity compiler v0.5.0. Client is a react-app, created with react-truffle-box.
 
 ## What does the project do?
 
