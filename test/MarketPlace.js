@@ -155,5 +155,24 @@ contract('MarketPlace', async accounts => {
         itemId: itemId,
       });
     });
+    it('allows the store owner to withdraw once a customer bought an item', async () => {
+      // We get the ID of the latest added item
+      const itemId = await marketPlace.inventoryByStorefrontId(storefrontId, 0);
+      // We buy this item
+      await marketPlace.purchaseItem(
+        storefrontId,
+        itemId,
+        ethers.utils.parseEther('2'),
+        { value: ethers.utils.parseEther('2') }
+      );
+      const transaction = await marketPlace.widthdrawStorefrontBalance(
+        storefrontId,
+        { from: storeOwner }
+      );
+      assertEventEqual(transaction, 'BalanceWithdrawn', {
+        id: storefrontId,
+        balance: ethers.utils.parseEther('2'),
+      });
+    });
   });
 });

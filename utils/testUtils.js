@@ -74,6 +74,10 @@ const assertDeepEqual = (actual, expected, context) => {
   }
 };
 
+const assertBNEqual = (actualBN, expectedBN, context) => {
+  assert.equal(actualBN.toString(), expectedBN.toString(), context);
+};
+
 module.exports = {
   fastForward,
   assertEventEqual,
